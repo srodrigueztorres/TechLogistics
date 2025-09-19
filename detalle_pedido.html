@@ -1,0 +1,45 @@
+<h1>Registrar Detalle de Pedido</h1>
+<form id="formDetalle">
+  <input type="number" id="id_pedido" placeholder="ID Pedido" required><br>
+  <input type="number" id="id_producto" placeholder="ID Producto" required><br>
+  <input type="number" id="cantidad" placeholder="Cantidad" required><br>
+  <input type="number" step="0.01" id="precio_unitario" placeholder="Precio Unitario" required><br>
+  <button type="submit">Guardar Detalle</button>
+</form>
+
+<h2>Lista de Detalles</h2>
+<ul id="listaDetalle"></ul>
+
+<script>
+  const API_URL = "http://localhost:3000";
+
+  document.getElementById("formDetalle").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const detalle = {
+      id_pedido: parseInt(document.getElementById("id_pedido").value),
+      id_producto: parseInt(document.getElementById("id_producto").value),
+      cantidad: parseInt(document.getElementById("cantidad").value),
+      precio_unitario: parseFloat(document.getElementById("precio_unitario").value)
+    };
+
+    const res = await fetch(`${API_URL}/detalle_pedido`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(detalle)
+    });
+    alert(await res.text());
+    cargarDetalles();
+  });
+
+  async function cargarDetalles() {
+    const res = await fetch(`${API_URL}/detalle_pedido`);
+    const detalles = await res.json();
+    const lista = document.getElementById("listaDetalle");
+    lista.innerHTML = "";
+    detalles.forEach(d => {
+      lista.innerHTML += `<li>Pedido: ${d.id_pedido} - Producto: ${d.id_producto} - Cant: ${d.cantidad} - Precio: ${d.precio_unitario}</li>`;
+    });
+  }
+
+  cargarDetalles();
+</script>

@@ -1,0 +1,43 @@
+<h1>Registrar Ruta</h1>
+<form id="formRutas">
+  <input type="text" id="origen" placeholder="Origen" required><br>
+  <input type="text" id="destino" placeholder="Destino" required><br>
+  <input type="number" step="0.01" id="distancia" placeholder="Distancia (km)" required><br>
+  <button type="submit">Guardar Ruta</button>
+</form>
+
+<h2>Lista de Rutas</h2>
+<ul id="listaRutas"></ul>
+
+<script>
+  const API_URL = "http://localhost:3000";
+
+  document.getElementById("formRutas").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const ruta = {
+      origen: document.getElementById("origen").value,
+      destino: document.getElementById("destino").value,
+      distancia: parseFloat(document.getElementById("distancia").value)
+    };
+
+    const res = await fetch(`${API_URL}/rutas`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(ruta)
+    });
+    alert(await res.text());
+    cargarRutas();
+  });
+
+  async function cargarRutas() {
+    const res = await fetch(`${API_URL}/rutas`);
+    const rutas = await res.json();
+    const lista = document.getElementById("listaRutas");
+    lista.innerHTML = "";
+    rutas.forEach(r => {
+      lista.innerHTML += `<li>ID: ${r.id_ruta} - ${r.origen} → ${r.destino} (${r.distancia} km)</li>`;
+    });
+  }
+
+  cargarRutas();
+</script>

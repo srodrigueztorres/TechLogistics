@@ -1,0 +1,41 @@
+<h1>Registrar Pedido</h1>
+<form id="formPedidos">
+  <input type="number" id="id_cliente" placeholder="ID Cliente" required><br>
+  <input type="date" id="fecha" required><br>
+  <button type="submit">Guardar Pedido</button>
+</form>
+
+<h2>Lista de Pedidos</h2>
+<ul id="listaPedidos"></ul>
+
+<script>
+  const API_URL = "http://localhost:3000";
+
+  document.getElementById("formPedidos").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const pedido = {
+      id_cliente: parseInt(document.getElementById("id_cliente").value),
+      fecha: document.getElementById("fecha").value
+    };
+
+    const res = await fetch(`${API_URL}/pedidos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(pedido)
+    });
+    alert(await res.text());
+    cargarPedidos();
+  });
+
+  async function cargarPedidos() {
+    const res = await fetch(`${API_URL}/pedidos`);
+    const pedidos = await res.json();
+    const lista = document.getElementById("listaPedidos");
+    lista.innerHTML = "";
+    pedidos.forEach(p => {
+      lista.innerHTML += `<li>ID: ${p.id_pedido} - Cliente: ${p.id_cliente} - Fecha: ${p.fecha}</li>`;
+    });
+  }
+
+  cargarPedidos();
+</script>

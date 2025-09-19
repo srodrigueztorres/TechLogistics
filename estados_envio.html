@@ -1,0 +1,37 @@
+<h1>Registrar Estado de Envío</h1>
+<form id="formEstado">
+  <input type="text" id="estado" placeholder="Nombre del Estado" required><br>
+  <button type="submit">Guardar Estado</button>
+</form>
+
+<h2>Lista de Estados</h2>
+<ul id="listaEstados"></ul>
+
+<script>
+  const API_URL = "http://localhost:3000";
+
+  document.getElementById("formEstado").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const estado = { estado: document.getElementById("estado").value };
+
+    const res = await fetch(`${API_URL}/estados_envio`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(estado)
+    });
+    alert(await res.text());
+    cargarEstados();
+  });
+
+  async function cargarEstados() {
+    const res = await fetch(`${API_URL}/estados_envio`);
+    const estados = await res.json();
+    const lista = document.getElementById("listaEstados");
+    lista.innerHTML = "";
+    estados.forEach(e => {
+      lista.innerHTML += `<li>ID: ${e.id_estado_envio} - Estado: ${e.estado}</li>`;
+    });
+  }
+
+  cargarEstados();
+</script>

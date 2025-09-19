@@ -1,0 +1,43 @@
+<h1>Registrar Transportista</h1>
+<form id="formTransportistas">
+  <input type="text" id="nombre" placeholder="Nombre" required><br>
+  <input type="text" id="telefono" placeholder="Teléfono" required><br>
+  <input type="text" id="licencia" placeholder="Licencia" required><br>
+  <button type="submit">Guardar Transportista</button>
+</form>
+
+<h2>Lista de Transportistas</h2>
+<ul id="listaTransportistas"></ul>
+
+<script>
+  const API_URL = "http://localhost:3000";
+
+  document.getElementById("formTransportistas").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const transportista = {
+      nombre: document.getElementById("nombre").value,
+      telefono: document.getElementById("telefono").value,
+      licencia: document.getElementById("licencia").value
+    };
+
+    const res = await fetch(`${API_URL}/transportistas`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(transportista)
+    });
+    alert(await res.text());
+    cargarTransportistas();
+  });
+
+  async function cargarTransportistas() {
+    const res = await fetch(`${API_URL}/transportistas`);
+    const transportistas = await res.json();
+    const lista = document.getElementById("listaTransportistas");
+    lista.innerHTML = "";
+    transportistas.forEach(t => {
+      lista.innerHTML += `<li>ID: ${t.id_transportista} - ${t.nombre} - Tel: ${t.telefono} - Licencia: ${t.licencia}</li>`;
+    });
+  }
+
+  cargarTransportistas();
+</script>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Productos - TechLogistics</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background: #f4f6f9;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin-bottom: 30px;
+    }
+    input {
+      display: block;
+      width: 95%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #27ae60;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #219150;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+    table th {
+      background: #27ae60;
+      color: white;
+    }
+    a {
+      display: inline-block;
+      margin-top: 15px;
+      text-decoration: none;
+      color: #27ae60;
+    }
+  </style>
+</head>
+<body>
+  <h1>📦 Gestión de Productos</h1>
+
+  <form id="productoForm">
+    <input type="text" id="nombre" placeholder="Nombre del producto" required>
+    <input type="text" id="descripcion" placeholder="Descripción">
+    <input type="number" id="precio" placeholder="Precio" step="0.01" required>
+    <input type="number" id="stock" placeholder="Stock" required>
+    <button type="submit">Agregar Producto</button>
+  </form>
+
+  <h2>📋 Lista de Productos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Precio</th>
+        <th>Stock</th>
+      </tr>
+    </thead>
+    <tbody id="productosTabla">
+    </tbody>
+  </table>
+
+  <a href="index.html">⬅️ Volver al Menú</a>
+
+  <script>
+    const API_URL = "http://localhost:3000/productos";
+
+    // Cargar productos
+    async function cargarProductos() {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      const tbody = document.getElementById("productosTabla");
+      tbody.innerHTML = "";
+      data.forEach(prod => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${prod.id_producto}</td>
+            <td>${prod.nombre}</td>
+            <td>${prod.descripcion || ""}</td>
+            <td>$${prod.precio}</td>
+            <td>${prod.stock}</td>
+          </tr>
+        `;
+      });
+    }
+
+    // Enviar formulario
+    document.getElementById("productoForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const producto = {
+        nombre: document.getElementById("nombre").value,
+        descripcion: document.getElementById("descripcion").value,
+        precio: parseFloat(document.getElementById("precio").value),
+        stock: parseInt(document.getElementById("stock").value)
+      };
+
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(producto)
+      });
+
+      if (res.ok) {
+        alert("Producto agregado ✅");
+        cargarProductos();
+        e.target.reset();
+      } else {
+        alert("Error al agregar producto ❌");
+      }
+    });
+
+    // Inicial
+    cargarProductos();
+  </script>
+</body>
+</html>

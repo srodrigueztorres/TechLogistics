@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Clientes - TechLogistics</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background: #f4f6f9;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin-bottom: 30px;
+    }
+    input {
+      display: block;
+      width: 95%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+    table th {
+      background: #3498db;
+      color: white;
+    }
+    a {
+      display: inline-block;
+      margin-top: 15px;
+      text-decoration: none;
+      color: #3498db;
+    }
+  </style>
+</head>
+<body>
+  <h1>👤 Gestión de Clientes</h1>
+
+  <form id="clienteForm">
+    <input type="text" id="nombre" placeholder="Nombre" required>
+    <input type="text" id="direccion" placeholder="Dirección">
+    <input type="text" id="telefono" placeholder="Teléfono">
+    <input type="email" id="email" placeholder="Email"required>
+    <button type="submit">Agregar Cliente</button>
+  </form>
+
+  <h2>📋 Lista de Clientes</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Dirección</th>
+        <th>Teléfono</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody id="clientesTabla">
+    </tbody>
+  </table>
+
+  <a href="index.html">⬅️ Volver al Menú</a>
+
+  <script>
+    const API_URL = "http://localhost:3000/clientes";
+
+    // Cargar clientes al abrir la página
+    async function cargarClientes() {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      const tbody = document.getElementById("clientesTabla");
+      tbody.innerHTML = "";
+      data.forEach(cliente => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${cliente.id_cliente}</td>
+            <td>${cliente.nombre}</td>
+            <td>${cliente.direccion || ""}</td>
+            <td>${cliente.telefono || ""}</td>
+            <td>${cliente.email || ""}</td>
+          </tr>
+        `;
+      });
+    }
+
+    // Enviar formulario
+    document.getElementById("clienteForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const cliente = {
+        nombre: document.getElementById("nombre").value,
+        direccion: document.getElementById("direccion").value,
+        telefono: document.getElementById("telefono").value,
+        email: document.getElementById("email").value
+      };
+
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cliente)
+      });
+
+      if (res.ok) {
+        alert("Cliente agregado ✅");
+        cargarClientes();
+        e.target.reset();
+      } else {
+        alert("Error al agregar cliente ❌");
+      }
+    });
+
+    // Cargar lista al iniciar
+    cargarClientes();
+  </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<h1>Registrar Envío</h1>
+<form id="formEnvios">
+  <input type="number" id="id_pedido" placeholder="ID Pedido" required><br>
+  <input type="number" id="id_estado_envio" placeholder="ID Estado" required><br>
+  <input type="number" id="id_ruta" placeholder="ID Ruta" required><br>
+  <input type="number" id="id_transportista" placeholder="ID Transportista" required><br>
+  <button type="submit">Guardar Envío</button>
+</form>
+
+<h2>Lista de Envíos</h2>
+<ul id="listaEnvios"></ul>
+
+<script>
+  const API_URL = "http://localhost:3000";
+
+  document.getElementById("formEnvios").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const envio = {
+      id_pedido: parseInt(document.getElementById("id_pedido").value),
+      id_estado_envio: parseInt(document.getElementById("id_estado_envio").value),
+      id_ruta: parseInt(document.getElementById("id_ruta").value),
+      id_transportista: parseInt(document.getElementById("id_transportista").value)
+    };
+
+    const res = await fetch(`${API_URL}/envios`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(envio)
+    });
+    alert(await res.text());
+    cargarEnvios();
+  });
+
+  async function cargarEnvios() {
+    const res = await fetch(`${API_URL}/envios`);
+    const envios = await res.json();
+    const lista = document.getElementById("listaEnvios");
+    lista.innerHTML = "";
+    envios.forEach(e => {
+      lista.innerHTML += `<li>Envío ID: ${e.id_envio} - Pedido: ${e.id_pedido} - Estado: ${e.id_estado_envio} - Ruta: ${e.id_ruta} - Transportista: ${e.id_transportista}</li>`;
+    });
+  }
+
+  cargarEnvios();
+</script>
